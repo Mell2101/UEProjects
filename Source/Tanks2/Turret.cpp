@@ -4,11 +4,9 @@
 #include "Turret.h"
 #include "TankPlayerController.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Cannon.h"
 #include "TimerManager.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/ArrowComponent.h"
-#include "Components/BoxComponent.h"
 #include "Engine/EngineTypes.h"
 
 
@@ -30,8 +28,28 @@ ATurret::ATurret()
 	HitCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("Hit collider"));
 	HitCollider->SetupAttachment(TurretMesh);
 
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health component"));
+	HealthComponent->OnDie.AddUObject(this, &ATurret::Die);
+	HealthComponent->OnDamaged.AddUObject(this, &ATurret::DamageTaked);
+
 	
 
+}
+
+void ATurret::TakeDamage(FDamageData DamageData)
+{
+	HealthComponent->TakeDamage(DamageData);
+}
+
+void ATurret::DamageTaked(float DamageValue)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Turret %s taked damage:%f Health:%f"), *GetName(),
+		DamageValue, HealthComponent->GetHealth());
+}
+
+void ATurret::Die()
+{
+	Destroy();
 }
 
 // Called when the game starts or when spawned

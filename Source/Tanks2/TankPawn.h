@@ -1,8 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-
+#include "Cannon.h"
+#include "HealthComponent.h"
 #include "CoreMinimal.h"
+#include "DamageTaker.h"
+#include "Components/BoxComponent.h"
 #include "GameFramework/Pawn.h"
 #include "TankPawn.generated.h"
 
@@ -12,10 +15,12 @@ class USpringArmComponent;
 class ATankPlayerController;
 class ACannon;
 class UArrowComponent;
+class UHealthComponent;
+class UBoxComponent;
 
 
 UCLASS()
-class TANKS2_API ATankPawn : public APawn
+class TANKS2_API ATankPawn : public APawn, public IDamageTaker
 {
 	GENERATED_BODY()
 
@@ -47,6 +52,11 @@ protected:
 	UPROPERTY()
 		ACannon* CannonSecond;
 
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+		UHealthComponent* HealthComponent;
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+		UBoxComponent* HitCollider;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed")
 		float MoveSpeed = 100;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed")
@@ -60,6 +70,11 @@ protected:
 		float InterpolationKey = 0.1f;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Turret|Speed")
 		float TurretRotationInterpolationKey = 0.5f;
+	UFUNCTION()
+		void Die();
+	UFUNCTION()
+		void DamageTaked(float DamageValue);
+
 
 	UPROPERTY()
 		ATankPlayerController* TankController;
@@ -86,10 +101,11 @@ public:
 
 	UFUNCTION()
 		void RotateRight(float AxisValue);
-
 	UFUNCTION()
 		void Fire();
-
+	UFUNCTION()
+		void TakeDamage(FDamageData DamageData);
+	
 	void SwapCannon();
 	void AddAmmo(float value);
 	void AmmoDecrease();

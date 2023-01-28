@@ -8,7 +8,9 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "TankPlayerController.h"
 #include "Components/ArrowComponent.h"
-#include "Cannon.h"
+#include "Components/BoxComponent.h"
+#include "GameStructs.h"
+
 
 // Sets default values
 ATankPawn::ATankPawn()
@@ -34,6 +36,14 @@ ATankPawn::ATankPawn()
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
+
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
+	HealthComponent->OnDie.AddUObject(this, &ATankPawn::Die);
+	HealthComponent->OnDamaged.AddUObject(this, &ATankPawn::DamageTaked);
+
+	HitCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("Hit collider"));
+	HitCollider->SetupAttachment(BodyMesh);
+
 }
 
 // Called when the game starts or when spawned
@@ -165,5 +175,20 @@ void ATankPawn::Fire()
 	{
 		Cannon->Fire();
 	}
+}
+
+void ATankPawn::TakeDamage(FDamageData DamageData)
+{
+	HealthComponent->TakeDamage(DamageData);
+}
+
+void ATankPawn::Die()
+{
+	Destroy();
+}
+
+void ATankPawn::DamageTaked(float DamageValue)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Tank %s taked damage:%f Health:%f"), *GetName(), DamageValue, HealthComponent->GetHealth());
 }
 
