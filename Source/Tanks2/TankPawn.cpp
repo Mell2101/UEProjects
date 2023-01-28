@@ -88,7 +88,14 @@ void ATankPawn::SwapCannon()
 
 void ATankPawn::AddAmmo(float value)
 {
-	Cannon->AddAmmo(value);
+	if(Cannon)
+		Cannon->AddAmmo(value);
+}
+
+void ATankPawn::AmmoDecrease()
+{
+	if (Cannon)
+		Cannon->AmmoDecrease();
 }
 
 // Called every frame
@@ -111,8 +118,7 @@ void ATankPawn::Tick(float DeltaTime)
 		FRotator currRotation = TurretMesh->GetComponentRotation();
 		targetRotation.Pitch = currRotation.Pitch;
 		targetRotation.Roll = currRotation.Roll;
-		TurretMesh->SetWorldRotation(FMath::Lerp(currRotation, targetRotation,
-			TurretRotationInterpolationKey));
+		TurretMesh->SetWorldRotation(FMath::Lerp(currRotation, targetRotation, TurretRotationInterpolationKey));
 	}
 
 }
@@ -138,17 +144,13 @@ void ATankPawn::Move(float DeltaTime)
 {
 	FVector currentLocationVertical = GetActorLocation();
 	FVector forwardVector = GetActorForwardVector();
-	FVector movePositionForward = currentLocationVertical + forwardVector * MoveSpeed *
-		_targetForwardAxisValue * DeltaTime;
+	FVector movePositionForward = currentLocationVertical + forwardVector * MoveSpeed * _targetForwardAxisValue * DeltaTime;
 	SetActorLocation(movePositionForward, true);
 
 	FVector currentLocationHorizontal = GetActorLocation();
 	FVector RightVector = GetActorRightVector();
-	FVector movePositionRight = currentLocationHorizontal + RightVector * MoveSpeed *
-		_targetRightAxisValue * DeltaTime;
+	FVector movePositionRight = currentLocationHorizontal + RightVector * MoveSpeed * _targetRightAxisValue * DeltaTime;
 	SetActorLocation(movePositionRight, true);
-	
-		
 	
 }
 

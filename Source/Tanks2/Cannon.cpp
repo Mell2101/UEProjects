@@ -85,12 +85,12 @@ void ACannon::Fire()
 	}
 	ReadyToFire = false;
 	GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload, 1 / FireRate, false);
-	--Ammo;
+	
 }
 
 bool ACannon::IsReadyToFire()
 {
-	return ReadyToFire && Ammo > 0;
+	return ReadyToFire;
 }
 
 void ACannon::Reload()
@@ -115,5 +115,10 @@ void ACannon::ActiveCannon(bool bIsVisible)
 void ACannon::AddAmmo(float value)
 {
 	Ammo += value;
+}
+
+void ACannon::AmmoDecrease()
+{
+	--Ammo;
 }
 

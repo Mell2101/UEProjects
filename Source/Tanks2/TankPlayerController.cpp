@@ -54,6 +54,7 @@ void ATankPlayerController::RotateRight(float AxisValue)
 void ATankPlayerController::Fire()
 {
 	TankPawn->Fire();
+	TankPawn->AmmoDecrease();
 }
 
 void ATankPlayerController::SwapCannon()

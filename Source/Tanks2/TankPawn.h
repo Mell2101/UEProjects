@@ -92,4 +92,5 @@ public:
 
 	void SwapCannon();
 	void AddAmmo(float value);
+	void AmmoDecrease();
 }; 

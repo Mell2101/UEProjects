@@ -53,4 +53,5 @@ public:
 	void ActiveCannon(bool bIsVisible);
 
 	void AddAmmo(float value);
+	void AmmoDecrease();
 };
