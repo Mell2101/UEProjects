@@ -8,6 +8,7 @@
 #include "Engine/Engine.h"
 #include "Projectile.h"
 #include "DrawDebugHelpers.h"
+#include "DamageTaker.h"
 
 // Sets default values
 ACannon::ACannon()
@@ -72,16 +73,28 @@ void ACannon::Fire()
 		
 		if (GetWorld()->LineTraceSingleByChannel(hitResult, start, end,	ECollisionChannel::ECC_Visibility, traceParams))
 		{
-			DrawDebugLine(GetWorld(), start, hitResult.Location, FColor::Red, false, 0.5f, 0, 5);
 			if (hitResult.Actor.Get())
 			{
-				hitResult.Actor.Get()->Destroy();
+				IDamageTaker* damageTakerActor = Cast<IDamageTaker>(hitResult.Actor.Get());
+				DrawDebugLine(GetWorld(), start, hitResult.Location, FColor::Red, false, 0.5f, 0, 5);
+				if (damageTakerActor)
+				{
+					//hitResult.Actor.Get()->Destroy();
+
+					FDamageData damageData;
+					damageData.DamageValue = 1;
+
+					damageTakerActor->TakeDamage(damageData);
+
+				}
 			}
 		}
 		else
 		{
-			DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 0.5f, 0, 5);
+			DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 0.5f, 0, 5);
 		}
+
+		
 	}
 	ReadyToFire = false;
 	GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload, 1 / FireRate, false);

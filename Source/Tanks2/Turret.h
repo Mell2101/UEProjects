@@ -3,7 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/ArrowComponent.h"
+#include "Components/BoxComponent.h"
 #include "GameFramework/Actor.h"
+#include "Cannon.h"
+#include "DamageTaker.h"
+#include "HealthComponent.h"
 #include "Turret.generated.h"
 
 class UStaticMeshComponent;
@@ -11,15 +16,23 @@ class UArrowComponent;
 class ACannon;
 class UBoxComponent;
 class APawn;
+class UHealthComponent;
 
 UCLASS()
-class TANKS2_API ATurret : public AActor
+class TANKS2_API ATurret : public AActor, public IDamageTaker
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
 	ATurret();
+
+	UFUNCTION()
+		void TakeDamage(FDamageData DamageData);
+	UFUNCTION()
+		void DamageTaked(float DamageValue);
+	UFUNCTION()
+		void Die();
 
 protected:
 	// Called when the game starts or when spawned
@@ -28,7 +41,6 @@ protected:
 	
 	void Targeting();
 	void RotateToPlayer();
-
 	bool IsPlayerInRange();
 	bool CanFire();
 	void Fire();
@@ -41,6 +53,8 @@ protected:
 		UArrowComponent* CannonSetupPoint;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 		UBoxComponent* HitCollider;
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+		UHealthComponent* HealthComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 		TSubclassOf<ACannon> CannonClass;
