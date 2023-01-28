@@ -91,4 +91,5 @@ public:
 		void Fire();
 
 	void SwapCannon();
+	void AddAmmo(float value);
 }; 

@@ -16,7 +16,7 @@ void ATankPlayerController::SetupInputComponent()
 	InputComponent->BindAxis("Horizontal", this, &ATankPlayerController::MoveRight);
 	InputComponent->BindAxis("RotateRight", this,&ATankPlayerController::RotateRight);
 	InputComponent->BindAction("Fire", IE_Pressed, this, &ATankPlayerController::Fire);
-	InputComponent->BindAction("SwapCannon", IE_Pressed, this, &ATankPlayerController::Fire);
+	InputComponent->BindAction("SwapCannon", IE_Pressed, this, &ATankPlayerController::SwapCannon);
 }
 
 void ATankPlayerController::Tick(float DeltaTime)

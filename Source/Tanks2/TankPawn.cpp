@@ -80,9 +80,15 @@ void ATankPawn::SwapCannon()
 	{
 		ACannon* CannonMid = Cannon;
 		Cannon = CannonSecond;
-		CannonSecond = Cannon;
+		CannonSecond = CannonMid;
 		CannonSecond->ActiveCannon(false);
+		Cannon->ActiveCannon(true);
 	}
+}
+
+void ATankPawn::AddAmmo(float value)
+{
+	Cannon->AddAmmo(value);
 }
 
 // Called every frame

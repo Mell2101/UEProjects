@@ -8,6 +8,7 @@
 #include "Cannon.generated.h"
 
 class UArrowComponent;
+class AProjectile;
 
 UCLASS()
 class TANKS2_API ACannon : public AActor
@@ -36,6 +37,8 @@ protected:
 		float Ammo = 10;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
 		ECannonType Type = ECannonType::FireProjectile;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
+		TSubclassOf<AProjectile> ProjectileClass;
 	
 	FTimerHandle ReloadTimerHandle;
 	bool ReadyToFire = false;
@@ -48,4 +51,6 @@ public:
 	void Reload();
 
 	void ActiveCannon(bool bIsVisible);
+
+	void AddAmmo(float value);
 };

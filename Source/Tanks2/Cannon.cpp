@@ -6,6 +6,8 @@
 #include "Components/StaticMeshComponent.h"
 #include "TimerManager.h"
 #include "Engine/Engine.h"
+#include "Projectile.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 ACannon::ACannon()
@@ -42,19 +44,46 @@ void ACannon::Tick(float DeltaTime)
 
 void ACannon::Fire()
 {
-	if (!ReadyToFire)
+	
+	if (ReadyToFire == false || Ammo < 0 )
 	{
 		return;
 	}
-	ReadyToFire = false;
+	
 	if (Type == ECannonType::FireProjectile)
 	{
-		GEngine->AddOnScreenDebugMessage(10, 1, FColor::Green, "Fire - projectile");
+		GEngine->AddOnScreenDebugMessage(10, 1, FColor::Green, FString::Printf(TEXT("Fire -Projectile, Ammo = %f"), Ammo));
+
+		AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, ProjectileSpawnPoint->GetComponentLocation(), ProjectileSpawnPoint->GetComponentRotation());
+		if (projectile)
+		{
+			projectile->Start();
+		}
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(10, 1, FColor::Green, "Fire - trace");
+		GEngine->AddOnScreenDebugMessage(10, 1, FColor::Green, FString::Printf(TEXT("Fire - trace, Ammo = %f"),Ammo));
+		FHitResult hitResult;
+		FCollisionQueryParams traceParams = FCollisionQueryParams(FName(TEXT("FireTrace")), true, this);
+		traceParams.bTraceComplex = true;
+		traceParams.bReturnPhysicalMaterial = false;
+		FVector start = ProjectileSpawnPoint->GetComponentLocation();
+		FVector end = ProjectileSpawnPoint->GetForwardVector() * FireRange + start;
+		
+		if (GetWorld()->LineTraceSingleByChannel(hitResult, start, end,	ECollisionChannel::ECC_Visibility, traceParams))
+		{
+			DrawDebugLine(GetWorld(), start, hitResult.Location, FColor::Red, false, 0.5f, 0, 5);
+			if (hitResult.Actor.Get())
+			{
+				hitResult.Actor.Get()->Destroy();
+			}
+		}
+		else
+		{
+			DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 0.5f, 0, 5);
+		}
 	}
+	ReadyToFire = false;
 	GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload, 1 / FireRate, false);
 	--Ammo;
 }
@@ -81,5 +110,10 @@ void ACannon::ActiveCannon(bool bIsVisible)
 		Mesh->SetVisibility(false);
 		Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
+}
+
+void ACannon::AddAmmo(float value)
+{
+	Ammo += value;
 }
 
