@@ -26,6 +26,12 @@ ACannon::ACannon()
 	ProjectileSpawnPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("Spawnpoint"));
 	ProjectileSpawnPoint->SetupAttachment(Mesh);
 
+	ShootEffect = CreateDefaultSubobject<UParticleSystemComponent >(TEXT("ShootEffect"));
+	ShootEffect->SetupAttachment(ProjectileSpawnPoint);
+
+	AudioEffect = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioEffect"));
+	AudioEffect->SetupAttachment(Mesh);
+
 }
 
 // Called when the game starts or when spawned
@@ -50,10 +56,12 @@ void ACannon::Fire()
 	{
 		return;
 	}
+	ShootEffect->ActivateSystem();
+	AudioEffect->Play();
 	
 	if (Type == ECannonType::FireProjectile)
 	{
-		GEngine->AddOnScreenDebugMessage(10, 1, FColor::Green, FString::Printf(TEXT("Fire -Projectile, Ammo = %f"), Ammo));
+		//GEngine->AddOnScreenDebugMessage(10, 1, FColor::Green, FString::Printf(TEXT("Fire -Projectile, Ammo = %f"), Ammo));
 
 		AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, ProjectileSpawnPoint->GetComponentLocation(), ProjectileSpawnPoint->GetComponentRotation());
 		if (projectile)
@@ -63,7 +71,7 @@ void ACannon::Fire()
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(10, 1, FColor::Green, FString::Printf(TEXT("Fire - trace, Ammo = %f"),Ammo));
+		//GEngine->AddOnScreenDebugMessage(10, 1, FColor::Green, FString::Printf(TEXT("Fire - trace, Ammo = %f"),Ammo));
 		FHitResult hitResult;
 		FCollisionQueryParams traceParams = FCollisionQueryParams(FName(TEXT("FireTrace")), true, this);
 		traceParams.bTraceComplex = true;
@@ -97,7 +105,7 @@ void ACannon::Fire()
 		
 	}
 	ReadyToFire = false;
-	GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload, 1 / FireRate, false);
+	GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload,  FireRate, false);
 	
 }
 

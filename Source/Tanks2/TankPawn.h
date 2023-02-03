@@ -61,6 +61,8 @@ protected:
 		float MoveSpeed = 100;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed")
 		float RotationSpeed = 100;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")
+		float TimeForChange = 5;
 
 	float _targetForwardAxisValue;
 	float _targetRightAxisValue;
@@ -82,7 +84,12 @@ protected:
 	void SetupCannon();
 	void SetupCannonSecond();
 
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+		Category = "AI| Move params| Patrol points", Meta = (MakeEditWidget = true))
+		TArray<FVector> PatrollingPoint;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Move params|Accurency")
+		float MovementAccurency = 50;
+
 
 
 public:	
@@ -106,7 +113,20 @@ public:
 	UFUNCTION()
 		void TakeDamage(FDamageData DamageData);
 	
+	UFUNCTION()
+		TArray<FVector> GetPatrollingPoints() { return PatrollingPoint; }
+	UFUNCTION()
+		float GetMovementAccurency() { return MovementAccurency; }
+
+	UFUNCTION()
+		FVector GetTurretForwardVector();
+	UFUNCTION()
+		void RotateTurretTo(FVector TargetPosition);
+
+	FVector GetEyesPosition();
+
 	void SwapCannon();
 	void AddAmmo(float value);
 	void AmmoDecrease();
+	float GetTimeForChange();
 }; 

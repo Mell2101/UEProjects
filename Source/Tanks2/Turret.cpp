@@ -8,6 +8,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Engine/EngineTypes.h"
+#include "TankPawn.h"
 
 
 // Sets default values
@@ -52,6 +53,11 @@ void ATurret::Die()
 	Destroy();
 }
 
+FVector ATurret::GetEyesPosition()
+{
+	return CannonSetupPoint->GetComponentLocation();
+}
+
 // Called when the game starts or when spawned
 void ATurret::BeginPlay()
 {
@@ -63,12 +69,20 @@ void ATurret::BeginPlay()
 	Cannon = GetWorld()->SpawnActor<ACannon>(CannonClass, params);
 	Cannon->AttachToComponent(CannonSetupPoint, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 
+	CannonSecond = GetWorld()->SpawnActor<ACannon>(CannonClassSecond, params);
+	CannonSecond->AttachToComponent(CannonSetupPoint, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+
+	CannonSecond->ActiveCannon(false);
+
+
 	PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
 
 	FTimerHandle _targetingTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(_targetingTimerHandle, this, &ATurret::Targeting, TargetingRate, true, TargetingRate);
 
+	
 
+	GetWorld()->GetTimerManager().SetTimer(TimerHandleTurret, this, &ATurret::SwapCannon, TimeForChange, true);
 }
 
 void ATurret::Destroyed()
@@ -79,14 +93,21 @@ void ATurret::Destroyed()
 
 void ATurret::Targeting()
 {
+
+	
 	if (IsPlayerInRange())
 	{
+		
 		RotateToPlayer();
 	}
 	if (CanFire() && Cannon && Cannon->IsReadyToFire())
 	{
 		Fire();
 	}
+	
+	
+	
+	
 }
 
 void ATurret::RotateToPlayer()
@@ -98,6 +119,7 @@ void ATurret::RotateToPlayer()
 	targetRotation.Roll = currRotetion.Roll;
 	TurretMesh->SetWorldRotation(FMath::Lerp(currRotetion, targetRotation, TargetSpeed));
 
+	
 }
 
 bool ATurret::IsPlayerInRange()
@@ -107,22 +129,66 @@ bool ATurret::IsPlayerInRange()
 
 bool ATurret::CanFire()
 {
+	if (!IsPlayerSeen())
+		return false;
+
 	FVector targetingDir = TurretMesh->GetForwardVector();
 	FVector dirToPlayer = PlayerPawn->GetActorLocation() - GetActorLocation();
 	dirToPlayer.Normalize();
 	float aimAngle = FMath::RadiansToDegrees(acosf(FVector::DotProduct(targetingDir, dirToPlayer)));
 	return aimAngle <= Accurency;
+	
+	
 }
 
 void ATurret::Fire()
 {
+	
 	if (Cannon) Cannon->Fire();
+	
+	
+}
+
+bool ATurret::IsPlayerSeen()
+{
+	FVector playerPos = PlayerPawn->GetActorLocation();
+	FVector eyesPos = CannonSetupPoint->GetComponentLocation();
+	FHitResult hitResult;
+	FCollisionQueryParams traceParams =
+		FCollisionQueryParams(FName(TEXT("FireTrace")), true, this);
+	traceParams.bTraceComplex = true;
+	//traceParams.AddIgnoredActor(TankPawn);
+	traceParams.bReturnPhysicalMaterial = false;
+	if (GetWorld()->LineTraceSingleByChannel(hitResult, eyesPos, playerPos,
+		ECollisionChannel::ECC_Visibility, traceParams))
+	{
+		if (hitResult.Actor.Get())
+		{
+			//DrawDebugLine(GetWorld(), eyesPos, hitResult.Location, FColor::Cyan,false, 0.5f, 0, 10);
+			return hitResult.Actor.Get() == PlayerPawn;
+		}
+	}
+	//DrawDebugLine(GetWorld(), eyesPos, playerPos, FColor::Cyan, false, 0.5f, 0, 10);
+	return false;
+}
+
+
+
+void ATurret::SwapCannon()
+{
+	if (Cannon && CannonSecond)
+	{
+		ACannon* CannonMid = Cannon;
+		Cannon = CannonSecond;
+		CannonSecond = CannonMid;
+		CannonSecond->ActiveCannon(false);
+		Cannon->ActiveCannon(true);
+	}
 }
 
 // Called every frame
 void ATurret::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 

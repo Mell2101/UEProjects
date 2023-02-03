@@ -17,6 +17,7 @@ class ACannon;
 class UBoxComponent;
 class APawn;
 class UHealthComponent;
+class ATankPawn;
 
 UCLASS()
 class TANKS2_API ATurret : public AActor, public IDamageTaker
@@ -33,6 +34,9 @@ public:
 		void DamageTaked(float DamageValue);
 	UFUNCTION()
 		void Die();
+
+	FVector GetEyesPosition();
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -55,14 +59,22 @@ protected:
 		UBoxComponent* HitCollider;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 		UHealthComponent* HealthComponent;
+	
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 		TSubclassOf<ACannon> CannonClass;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
+		TSubclassOf<ACannon> CannonClassSecond;
+	
 
 	UPROPERTY()
 		ACannon* Cannon;
 	UPROPERTY()
+		ACannon* CannonSecond;
+	UPROPERTY()
 		APawn* PlayerPawn;
+	UPROPERTY()
+		ATankPawn* TankPawn;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
 		float TargetingRange = 1000;
@@ -73,10 +85,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
 		float Accurency = 10;
 
-	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")
+		float TimeForChange = 5;
 
 
 
+	bool IsPlayerSeen();
+	void SwapCannon();
+
+	FTimerHandle TimerHandleTurret;
 
 public:	
 	// Called every frame

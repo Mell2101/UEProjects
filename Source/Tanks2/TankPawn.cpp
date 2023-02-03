@@ -84,6 +84,28 @@ void ATankPawn::SetupCannonSecond()
 	CannonSecond->AttachToComponent(CannonSetupPoint, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 }
 
+FVector ATankPawn::GetTurretForwardVector()
+{
+	return TurretMesh->GetForwardVector();
+}
+
+void ATankPawn::RotateTurretTo(FVector TargetPosition)
+{
+	FRotator targetRotation =
+		UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetPosition);
+	FRotator currentRotation = TurretMesh->GetComponentRotation();
+	targetRotation.Pitch = currentRotation.Pitch;
+	targetRotation.Roll = currentRotation.Roll;
+	TurretMesh->SetWorldRotation(FMath::Lerp(currentRotation, targetRotation,
+		TurretRotationInterpolationKey));
+
+}
+
+FVector ATankPawn::GetEyesPosition()
+{
+	return CannonSetupPoint->GetComponentLocation();
+}
+
 void ATankPawn::SwapCannon()
 {
 	if (Cannon && CannonSecond)
@@ -106,6 +128,11 @@ void ATankPawn::AmmoDecrease()
 {
 	if (Cannon)
 		Cannon->AmmoDecrease();
+}
+
+float ATankPawn::GetTimeForChange()
+{
+	return TimeForChange;
 }
 
 // Called every frame
