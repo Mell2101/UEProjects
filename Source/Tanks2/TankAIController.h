@@ -25,6 +25,7 @@ protected:
 		TArray<FVector> PatrollingPoints;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI| Move params|Accurency")
 		float MovementAccurency;
+	
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
 		float TargetingRange = 1000;
@@ -48,6 +49,8 @@ protected:
 	bool IsPlayerInRange();
 	bool CanFire();
 	void Fire();
+
+	void Initialize();
 public:
 
 	bool GetIsReadyToChange();

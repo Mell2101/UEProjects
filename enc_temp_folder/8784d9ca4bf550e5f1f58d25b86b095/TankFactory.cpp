@@ -50,7 +50,6 @@ void ATankFactory::BeginPlay()
 		&ATankFactory::SpawnNewTank, SpawnTankRate, true);
 	
 	BuildingMesh->SetVisibility(true);
-	BuildingMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	
 }
 
@@ -72,11 +71,7 @@ void ATankFactory::Die()
 		LinkedMapLoader->SetIsActivated(true);
 
 	BuildingMesh->SetVisibility(false);
-	BuildingMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	
-	UGameplayStatics::OpenLevel(GetWorld(), LoadLevelName);
 
-	
 }
 
 void ATankFactory::DamageTaked(float DamageValue)

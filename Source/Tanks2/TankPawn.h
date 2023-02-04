@@ -17,6 +17,7 @@ class ACannon;
 class UArrowComponent;
 class UHealthComponent;
 class UBoxComponent;
+class ATargetPoint;
 
 
 UCLASS()
@@ -83,13 +84,12 @@ protected:
 
 	void SetupCannon();
 	void SetupCannonSecond();
+	
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,
-		Category = "AI| Move params| Patrol points", Meta = (MakeEditWidget = true))
-		TArray<FVector> PatrollingPoint;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Move params|Accurency")
 		float MovementAccurency = 50;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Move params|Patrol points" , Meta = (MakeEditWidget = true))
+		TArray<ATargetPoint*> PatrollingPoints;
 
 
 public:	
@@ -114,7 +114,7 @@ public:
 		void TakeDamage(FDamageData DamageData);
 	
 	UFUNCTION()
-		TArray<FVector> GetPatrollingPoints() { return PatrollingPoint; }
+		TArray<FVector> GetPatrollingPoints() ;
 	UFUNCTION()
 		float GetMovementAccurency() { return MovementAccurency; }
 
@@ -124,6 +124,10 @@ public:
 		void RotateTurretTo(FVector TargetPosition);
 
 	FVector GetEyesPosition();
+
+
+	
+	void SetPatrollingPoints(TArray<ATargetPoint*> NewPatrollingPoints);
 
 	void SwapCannon();
 	void AddAmmo(float value);

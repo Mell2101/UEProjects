@@ -47,10 +47,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn tanks params")
 		TArray<ATargetPoint*> TankWayPoints;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map param")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn tanks param")
 		AMapLoader* LinkedMapLoader;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map param");
-		FName LoadLevelName;
 		
 	void SpawnNewTank();
 

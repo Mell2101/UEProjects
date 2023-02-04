@@ -10,6 +10,7 @@
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
 #include "GameStructs.h"
+#include "Engine/TargetPoint.h"
 
 
 // Sets default values
@@ -104,6 +105,12 @@ void ATankPawn::RotateTurretTo(FVector TargetPosition)
 FVector ATankPawn::GetEyesPosition()
 {
 	return CannonSetupPoint->GetComponentLocation();
+}
+
+void ATankPawn::SetPatrollingPoints(TArray<ATargetPoint*> NewPatrollingPoints)
+{
+
+	PatrollingPoints = NewPatrollingPoints;
 }
 
 void ATankPawn::SwapCannon()
@@ -212,6 +219,7 @@ void ATankPawn::TakeDamage(FDamageData DamageData)
 void ATankPawn::Die()
 {
 	Destroy();
+	Cannon->Destroy();
 }
 
 void ATankPawn::DamageTaked(float DamageValue)
@@ -219,3 +227,12 @@ void ATankPawn::DamageTaked(float DamageValue)
 	UE_LOG(LogTemp, Warning, TEXT("Tank %s taked damage:%f Health:%f"), *GetName(), DamageValue, HealthComponent->GetHealth());
 }
 
+TArray<FVector> ATankPawn::GetPatrollingPoints()
+{
+	TArray<FVector> points;
+	for (ATargetPoint* point : PatrollingPoints)
+	{
+		points.Add(point->GetActorLocation());
+	}
+	return points;
+}

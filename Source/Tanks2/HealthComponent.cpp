@@ -19,7 +19,7 @@ void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
+	CurrentHealth = MaxHealth;
 }
 
 
