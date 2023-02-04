@@ -74,7 +74,7 @@ void ATankFactory::Die()
 	BuildingMesh->SetVisibility(false);
 	BuildingMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	
-	UGameplayStatics::OpenLevel(GetWorld(), LoadLevelName);
+	//UGameplayStatics::OpenLevel(GetWorld(), LoadLevelName);
 
 	
 }
